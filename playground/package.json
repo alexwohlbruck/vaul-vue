@@ -13,6 +13,7 @@
     "test": "pnpm run test:e2e"
   },
   "dependencies": {
+    "@vueuse/core": "^10.8.0",
     "reka-ui": "^2.0.0",
     "vaul-vue": "workspace:*",
     "vue": "^3.4.5",
