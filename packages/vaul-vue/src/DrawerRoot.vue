@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<DrawerRootProps>(), {
   fixed: undefined,
   dismissible: true,
   activeSnapPoint: undefined,
+  defaultSnapPoint: undefined,
   snapPoints: undefined,
   shouldScaleBackground: undefined,
   setBackgroundColorOnScale: true,

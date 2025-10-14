@@ -8,6 +8,8 @@ const {
   open,
   isOpen,
   snapPointsOffset,
+  snapPoints,
+  activeSnapPoint,
   hasSnapPoints,
   drawerRef,
   onPress,
@@ -27,8 +29,13 @@ useScaleBackground()
 const delayedSnapPoints = ref(false)
 
 const snapPointHeight = computed(() => {
-  if (snapPointsOffset.value && snapPointsOffset.value.length > 0)
-    return `${snapPointsOffset.value[0]}px`
+  // Find the index of the active snap point
+  const activeIndex = snapPoints.value?.findIndex(sp => sp === activeSnapPoint.value) ?? 0
+  
+  if (snapPointsOffset.value && snapPointsOffset.value.length > 0) {
+    const index = activeIndex >= 0 ? activeIndex : 0
+    return `${snapPointsOffset.value[index]}px`
+  }
 
   return '0'
 })

@@ -24,6 +24,12 @@ export interface WithoutFadeFromProps {
 export type DrawerRootProps = {
   activeSnapPoint?: number | string | null
   /**
+   * Index of the snap point to use when the drawer opens (0-based).
+   * If not provided, defaults to the first snap point (index 0).
+   * @default undefined (uses index 0)
+   */
+  defaultSnapPoint?: number | null
+  /**
    * Number between 0 and 1 that determines when the drawer should be closed.
    * Example: threshold of 0.5 would close the drawer if the user swiped for 50% of the height of the drawer or more.
    * @default 0.25
@@ -89,6 +95,7 @@ export interface UseDrawerProps {
   shouldScaleBackground: Ref<boolean | undefined>
   setBackgroundColorOnScale: Ref<boolean | undefined>
   activeSnapPoint: Ref<number | string | null | undefined>
+  defaultSnapPoint: Ref<number | null | undefined>
   fadeFromIndex: Ref<number | undefined>
   closeThreshold: Ref<number>
   scrollLockTimeout: Ref<number>
@@ -162,6 +169,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     scrollLockTimeout,
     closeThreshold,
     activeSnapPoint,
+    defaultSnapPoint: defaultSnapPoint,
     fadeFromIndex,
     direction,
     noBodyStyles,
@@ -228,6 +236,29 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     overlayRef,
     onSnapPointChange,
     direction,
+  })
+
+  // Helper function to get snap point value from defaultSnapPoint index
+  function getDefaultSnapPointValue() {
+    if (!snapPoints.value)
+      return null
+
+    if (defaultSnapPoint.value !== null && defaultSnapPoint.value !== undefined) {
+      const index = defaultSnapPoint.value
+      // Validate index is within bounds
+      if (index >= 0 && index < snapPoints.value.length) {
+        return snapPoints.value[index]
+      }
+    }
+    // Fallback to first snap point
+    return snapPoints.value[0]
+  }
+
+  // Initialize activeSnapPoint to defaultSnapPoint if provided and no value is set
+  watchEffect(() => {
+    if (snapPoints.value && !activeSnapPoint.value) {
+      activeSnapPoint.value = getDefaultSnapPointValue()
+    }
   })
 
   function onSnapPointChange(activeSnapPointIndex: number, snapPointsOffset: number[]) {
@@ -495,8 +526,9 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
       isOpen.value = false
 
     window.setTimeout(() => {
-      if (snapPoints.value)
-        activeSnapPoint.value = snapPoints.value[0]
+      if (snapPoints.value) {
+        activeSnapPoint.value = getDefaultSnapPointValue()
+      }
     }, TRANSITIONS.DURATION * 1000) // seconds to ms
   }
 
