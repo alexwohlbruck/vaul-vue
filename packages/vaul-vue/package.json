@@ -1,8 +1,11 @@
 {
   "name": "@alexwohlbruck/vaul-vue",
   "type": "module",
-  "version": "0.4.3",
-  "repository": "https://github.com/alexwohlbruck/vaul-vue",
+  "version": "0.4.4",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexwohlbruck/vaul-vue.git"
+  },
   "keywords": [
     "vue",
     "vue3",

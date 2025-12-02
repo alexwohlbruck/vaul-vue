@@ -280,6 +280,13 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     return (window.innerWidth - WINDOW_TOP_OFFSET) / window.innerWidth
   }
 
+  function dragDisabled(el: EventTarget | null) {
+    if (!el)
+      return false
+    let element = el as HTMLElement
+    return element.hasAttribute('data-vaul-no-drag') || element.closest('[data-vaul-no-drag]')
+  }
+
   function shouldDrag(el: EventTarget | null, isDraggingInDirection: boolean) {
     if (!el)
       return false
@@ -288,7 +295,7 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
     const swipeAmount = drawerRef.value ? getTranslate(drawerRef.value.$el, direction.value) : null
     const date = new Date()
 
-    if (element.hasAttribute('data-vaul-no-drag') || element.closest('[data-vaul-no-drag]'))
+    if (dragDisabled(el))
       return false
 
     if (direction.value === 'right' || direction.value === 'left')
@@ -396,9 +403,15 @@ export function useDrawer(props: UseDrawerProps & DialogEmitHandlers): DrawerRoo
 
       if (!isAllowedToDrag.value && !shouldDrag(event.target, isDraggingInDirection))
         return
+
+      if (dragDisabled(event.target))
+        return
+
       drawerRef?.value?.$el.classList.add(DRAG_CLASS)
       // If shouldDrag gave true once after pressing down on the drawer, we set isAllowedToDrag to true and it will remain true until we let go, there's no reason to disable dragging mid way, ever, and that's the solution to it
       isAllowedToDrag.value = true
+
+
       set(drawerRef.value?.$el, {
         transition: 'none',
       })
